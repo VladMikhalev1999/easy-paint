@@ -1,0 +1,95 @@
+<style>
+.button {
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  padding: 1px;
+  cursor: pointer;
+  border: solid 1px #fff;
+}
+ 
+.button:hover {
+  border: solid 1px #f00;
+}
+ 
+.button:active {
+  border: solid 1px #ff0;
+}
+ 
+#palette, #canvas {
+  display: inline-block;
+  border: solid 1px #aaa;
+  cursor: default;
+  vertical-align: top;
+}
+ 
+#palette {
+  width: 475px;
+}
+ 
+#clear {
+  background: #eee;
+  color: #777;
+  padding: 10px;
+  width: 200px;
+  text-align: center;
+  margin: 15px;
+  cursor: pointer;
+}
+ 
+.container {
+   white-space: normal;
+   min-width: 710px;
+   margin: 20px;
+}
+</style>
+<div class="container">
+  <div>
+  <canvas id='canvas' width="600" height="600">Ваш браузер устарел!</canvas>
+  <div id="palette"></div>
+  </div>
+  <div id="clear">Очистить изображение</div>
+</div>
+<script>
+var palette = document.getElementById("palette");
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+window.onload = () => {
+    generatePalette(palette);
+    ctx.lineCap = "round";
+    ctx.lineWidth = 4;
+    canvas.addEventListener("mousemove", (e) => {
+        var x = e.offsetX;
+        var y = e.offsetY;
+        var dx = e.movementX;
+        var dy = e.movementY;
+        if (e.buttons > 0) {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x - dx, y - dy);
+            ctx.stroke();
+            ctx.closePath();
+        }
+    });
+    var btn = document.getElementById("clear");
+    btn.onclick = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+};
+function generatePalette(p, max = 4) {
+    for (r = 0; r <= max; r++) {
+        for (g = 0; g <= max; g++) {
+            for (b = 0; b <= max; b++) {
+                var block = document.createElement("div");
+                block.className = "button";
+                block.style.backgroundColor = "rgb(" + Math.round(r * 255 / max) + ", " + Math.round(g * 255 / max) + ", " + Math.round(b * 255 / max) + ")";
+                block.addEventListener("click", (e) => {
+                    var color = e.target.style.backgroundColor;
+                    ctx.strokeStyle = color;
+                });
+                p.appendChild(block);
+            }
+        }
+    }
+}
+</script>
